@@ -20,6 +20,7 @@ public class ThreadExample {
 
 		Thread t1 = new Thread(world);
 		t1.start(); // using implements esa run kerta hai.
+//		t1.start();java.lang.IllegalThreadStateException runtime Exception.
 
 		for (int i = 0; i < 11; i++) {
 			System.out.println(Thread.currentThread().getName());
