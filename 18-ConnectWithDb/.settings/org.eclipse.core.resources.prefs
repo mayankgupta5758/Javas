@@ -1,3 +1,5 @@
 eclipse.preferences.version=1
 encoding//src/Demo.java=UTF-8
+encoding//src/com/mayank/jdbcassignment/dao/CourseDAO.java=UTF-8
 encoding//src/com/mayank/jdbcassignment/dao/RegistrationDAO.java=UTF-8
+encoding//src/com/mayank/jdbcassignment/dao/StudentDAO.java=UTF-8

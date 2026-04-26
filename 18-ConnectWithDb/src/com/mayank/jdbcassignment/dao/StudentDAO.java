@@ -12,35 +12,35 @@ public class StudentDAO {
 	DbConnecter dbConnecter = new DbConnecter();
 
 	public void addStudent(Connection connection, Scanner scanner, Student student) {
-		try {
-			String query = "INSERT INTO student(name, age, branch) values (?,?,?)";
-			PreparedStatement preparedStatement = connection.prepareStatement(query);
-			preparedStatement.setString(1, student.getName());
-			preparedStatement.setInt(2, student.getAge());
-			preparedStatement.setString(3, student.getBranch());
+		String query = "INSERT INTO student (id, name, age, b_id) VALUES (?, ?, ?, ?)";
+		try (PreparedStatement ps = connection.prepareStatement(query)) {
 
-			int rowAffected = preparedStatement.executeUpdate();
-			if (rowAffected > 0) {
-				System.out.println("Student Data Added Successfully...");
-				return;
+			ps.setInt(1, student.getId());
+			ps.setString(2, student.getName());
+			ps.setInt(3, student.getAge());
+			ps.setInt(4, student.getBranchId());
+
+			int rows = ps.executeUpdate();
+			if (rows > 0) {
+				System.out.println("Student Data Added Successfully");
+			} else {
+				System.out.println("Failed to add student");
 			}
-			System.out.println("Student Data Added Failed!!");
-
 		} catch (SQLException e) {
-			e.getMessage();
+			e.printStackTrace();
 		}
 	}
 
 	public void viewAllStudentDataWithCourse(Connection connection) {
 		System.out.println("________________________________");
-
-		String query = "SELECT s.id, s.name, " + "COUNT(r.course_name) AS total_courses, "
-				+ "GROUP_CONCAT(r.course_name SEPARATOR ', ') AS courses " + "FROM student s "
-				+ "LEFT JOIN registration r ON s.id = r.student_id " + "GROUP BY s.id, s.name";
+		String query = "SELECT s.id, s.name, COUNT(c.c_id) AS total_courses, "
+				+ "GROUP_CONCAT(c.c_name SEPARATOR ', ') AS courses FROM student s "
+				+ "LEFT JOIN registration r ON s.id = r.student_id LEFT JOIN courses c ON r.c_id = c.c_id "
+				+ "GROUP BY s.id, s.name";
 
 		try (PreparedStatement ps = connection.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
-
 			while (rs.next()) {
+
 				int id = rs.getInt("id");
 				String name = rs.getString("name");
 				int count = rs.getInt("total_courses");
@@ -49,90 +49,86 @@ public class StudentDAO {
 				if (courses == null) {
 					courses = "No Course";
 				}
-
 				System.out.println("| " + id + " | " + name + " | " + count + " | " + courses + " |");
 			}
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 		System.out.println("________________________________");
 	}
 
 	public void getStudentByIdWithCourse(Connection connection, int id) {
-		try {
-			String query = "select s.age as ages, s.name as name, r.course_name as course_name, s.branch as branch, r.fees_paid as fee"
-					+ " from student s join registration r on s.id = r.student_id where s.id = ?";
-			PreparedStatement preparedStatement = connection.prepareStatement(query);
-			preparedStatement.setInt(1, id);
+		String query = "SELECT s.id, s.name, s.age, b.b_name, c.c_name, r.fees_paid FROM student s "
+				+ "LEFT JOIN branch b ON s.b_id = b.b_id LEFT JOIN registration r ON s.id = r.student_id "
+				+ "LEFT JOIN courses c ON r.c_id = c.c_id WHERE s.id = ?";
 
-			ResultSet resultSet = preparedStatement.executeQuery();
-			if (!resultSet.next()) {
-				System.out.println("Student Not Found Or Not Enrolled in any Course!!!");
-				return;
+		try (PreparedStatement ps = connection.prepareStatement(query)) {
+
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
+			boolean found = false;
+			while (rs.next()) {
+				found = true;
+
+				String name = rs.getString("name");
+				int age = rs.getInt("age");
+				String branch = rs.getString("b_name");
+				String course = rs.getString("c_name");
+				double fee = rs.getDouble("fees_paid");
+				if (course == null) {
+					course = "No Course";
+				}
+				System.out.println(
+						"| " + id + " | " + name + " | " + age + " | " + branch + " | " + course + " | " + fee + " |");
 			}
-
-			do {
-				String name = resultSet.getString("name");
-				String branch = resultSet.getString("branch");
-				int age = resultSet.getInt("ages");
-				String course_name = resultSet.getString("course_name");
-				double fee = resultSet.getDouble("fee");
-
-				System.out.println("| " + id + " | " + name + " | " + age + " | " + branch + " | " + course_name + " | "
-						+ fee + " | ");
-
-			} while (resultSet.next());
-
+			if (!found) {
+				System.out.println("Student Not Found!");
+			}
 		} catch (SQLException e) {
-			e.getMessage();
+			e.printStackTrace();
 		}
 	}
 
 	public Student getStudentById(Connection connection, int id) {
 		Student student = null;
-		try {
-			String query = "select * from student where id = ?";
-			PreparedStatement preparedStatement = connection.prepareStatement(query);
-			preparedStatement.setInt(1, id);
+		String query = "SELECT * FROM student WHERE id = ?";
 
-			ResultSet resultSet = preparedStatement.executeQuery();
+		try (PreparedStatement ps = connection.prepareStatement(query)) {
 
-			if (resultSet.next()) {
-				String name = resultSet.getString("name");
-				String branch = resultSet.getString("branch");
-				int age = resultSet.getInt("age");
-				student = new Student(id, name, age, branch);
-//				System.out.println("| " + id + " | " + name + " | " + age + " | " + branch + " | ");
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				String name = rs.getString("name");
+				int age = rs.getInt("age");
+				int b_id = rs.getInt("b_id");
+				student = new Student(id, name, age, b_id);
 				return student;
 			}
-			System.out.println("Student Not Found!!!");
-
+			System.out.println("Student Not Found!");
 		} catch (SQLException e) {
-			e.getMessage();
+			e.printStackTrace();
 		}
 		return student;
 	}
 
 	public void updateStudentDetails(Connection connection, int id, Student student) {
-		try {
-			String query = "Update student set name = ?, age = ?, branch = ? where id = ?";
-			PreparedStatement preparedStatement = connection.prepareStatement(query);
-			preparedStatement.setString(1, student.getName());
-			preparedStatement.setInt(2, student.getAge());
-			preparedStatement.setString(3, student.getBranch());
-			preparedStatement.setInt(4, id);
+		String query = "UPDATE student SET name = ?, age = ?, b_id = ? WHERE id = ?";
 
-			int rowAffected = preparedStatement.executeUpdate();
-			if (rowAffected > 0) {
-				System.out.println("Student Data Updated Successfully...");
-				return;
+		try (PreparedStatement ps = connection.prepareStatement(query)) {
+
+			ps.setString(1, student.getName());
+			ps.setInt(2, student.getAge());
+			ps.setInt(3, student.getBranchId());
+			ps.setInt(4, id);
+
+			int rows = ps.executeUpdate();
+			if (rows > 0) {
+				System.out.println("Student Data Updated Successfully");
+			} else {
+				System.out.println("Student Not Found / Update Failed");
 			}
-			System.out.println("Student Data Updated Failed!!");
-
 		} catch (SQLException e) {
-			e.getMessage();
+			e.printStackTrace();
 		}
 	}
 
@@ -140,45 +136,38 @@ public class StudentDAO {
 		try {
 			connection.setAutoCommit(false);
 
-			Student student = getStudentById(connection, id);
-			if (student == null) {
-				System.out.println("Student not Found!!!");
-				connection.rollback();
-				return;
+			String query1 = "DELETE FROM registration WHERE student_id = ?";
+			try (PreparedStatement ps1 = connection.prepareStatement(query1)) {
+				ps1.setInt(1, id);
+				ps1.executeUpdate();
 			}
 
-			String query2 = "delete from registration where student_id = ?";
-			PreparedStatement ps2 = connection.prepareStatement(query2);
-			ps2.setInt(1, id);
-			ps2.executeUpdate();
+			String query2 = "DELETE FROM student WHERE id = ?";
+			int rows;
 
-			String query1 = "delete from student where id = ?";
-			PreparedStatement ps1 = connection.prepareStatement(query1);
-			ps1.setInt(1, id);
-			int rowAffected1 = ps1.executeUpdate();
+			try (PreparedStatement ps2 = connection.prepareStatement(query2)) {
+				ps2.setInt(1, id);
+				rows = ps2.executeUpdate();
+			}
 
-			if (rowAffected1 > 0) {
+			if (rows > 0) {
 				connection.commit();
-				System.out.println("Student Data Deleted Successfully...");
+				System.out.println("Student Data Deleted Successfully");
 			} else {
 				connection.rollback();
-				System.out.println("Delete failed!");
+				System.out.println("Student Not Found / Delete Failed");
 			}
-
 		} catch (Exception e) {
 			try {
-				if (connection != null) {
-					connection.rollback();
-				}
+				connection.rollback();
 			} catch (SQLException ex) {
 				ex.printStackTrace();
 			}
 			e.printStackTrace();
+
 		} finally {
 			try {
-				if (connection != null) {
-					connection.setAutoCommit(true);
-				}
+				connection.setAutoCommit(true);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

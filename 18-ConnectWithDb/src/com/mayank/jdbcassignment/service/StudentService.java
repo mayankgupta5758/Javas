@@ -3,6 +3,9 @@ package com.mayank.jdbcassignment.service;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Scanner;
+
+import com.mayank.jdbcassignment.dao.BranchDAO;
+import com.mayank.jdbcassignment.dao.CourseDAO;
 import com.mayank.jdbcassignment.dao.RegistrationDAO;
 import com.mayank.jdbcassignment.dao.StudentDAO;
 import com.mayank.jdbcassignment.model.Registration;
@@ -81,15 +84,14 @@ public class StudentService {
 	}
 
 	public void addStudent(Connection connection, Scanner scanner) {
-		String input = InputValidation.getValidString(scanner, "Enter Name: ");
-        input = input.substring(0,1).toUpperCase() + input.substring(1).toLowerCase();
+	    String name = InputValidation.getValidString(scanner, "Enter Name: ");
+	    name = name.substring(0,1).toUpperCase() + name.substring(1).toLowerCase();
+	    int age = InputValidation.getValidInt(scanner, "Enter Age: ");
+	    int b_id = new BranchDAO().getBranchId(connection, scanner);
 
-		int age = InputValidation.getValidInt(scanner, "Enter age: ");
-		String branch = InputValidation.getValidString(scanner, "Enter branch: ");
-		branch = branch.substring(0,1).toUpperCase() + branch.substring(1).toLowerCase();
-		
-		Student student = new Student(input, age, branch);
-		studentDAO.addStudent(connection, scanner, student);
+	    Student student = new Student(name, age, b_id);
+
+	    studentDAO.addStudent(connection,scanner, student);
 	}
 
 	public void viewAllStudent(Connection connection) {
@@ -113,7 +115,7 @@ public class StudentService {
 			System.out.println("Student Not Found!!!");
 			return;
 		}
-		System.out.println("| " + id + " | " + student.getName() + " | " + student.getAge() + " | " + student.getBranch() + " | ");
+		System.out.println("| " + id + " | " + student.getName() + " | " + student.getAge() + " | " + student.getBranchId() + " | ");
 	}
 
 	public void updateStudentDetails(Connection connection, Scanner scanner) {
@@ -126,11 +128,10 @@ public class StudentService {
 		String newName = InputValidation.getValidString(scanner, "Enter new Name: ");
 		newName = newName.substring(0,1).toUpperCase() + newName.substring(1).toLowerCase();
 
-		String newBranch = InputValidation.getValidString(scanner, "Enter new Branch: ");
-		newBranch = newBranch.substring(0,1).toUpperCase() + newBranch.substring(1).toLowerCase();
+		int newBranchId = new BranchDAO().getBranchId(connection, scanner);
 
 		int newAge = InputValidation.getValidInt(scanner, "Enter new Age: ");
-		student = new Student(newName, newAge, newBranch);
+		student = new Student(newName, newAge, newBranchId);
 		studentDAO.updateStudentDetails(connection, id, student);
 	}
 
@@ -151,8 +152,7 @@ public class StudentService {
 			System.out.println("Student Not Found!!!");
 			return;
 		}
-		String course_name = InputValidation.getValidString(scanner, "Enter Course Name: ");
-		course_name = course_name.substring(0,1).toUpperCase() + course_name.substring(1).toLowerCase();
+		int c_id = new CourseDAO().getCourseId(connection, scanner);
 
 		double fees_paid;
 		do {
@@ -164,7 +164,7 @@ public class StudentService {
 
 		} while (fees_paid <= 0);
 
-		Registration registration = new Registration(studentId, course_name, fees_paid);
+		Registration registration = new Registration(studentId, c_id, fees_paid);
 
 		registrationDAO.addCourse(connection, studentId, registration);
 	}
@@ -210,7 +210,7 @@ public class StudentService {
 		Registration registration = null;
 		for (Registration r : list) {
 			if (r.getRegId() == rigId) {
-				registration = new Registration(r.getRegId(), r.getStudentId(), r.getCourseName(), new_fees_paid);
+				registration = new Registration(r.getRegId(), r.getStudentId(), r.getCourseId(), new_fees_paid);
 			}
 		}
 		if (registration == null) {

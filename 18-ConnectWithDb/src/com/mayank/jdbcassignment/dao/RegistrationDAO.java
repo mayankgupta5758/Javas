@@ -18,191 +18,158 @@ public class RegistrationDAO {
 
 			Student student = new StudentDAO().getStudentById(connection, studentId);
 			if (student == null) {
-				System.out.println("Student Not Found!!!");
+				System.out.println("Student Not Found!");
 				connection.rollback();
 				return;
 			}
 
-			List<Registration> list = getStudentCourseDetails(connection, studentId);
-			for (Registration r : list) {
-				if (r.getCourseName().equalsIgnoreCase(registration.getCourseName())) {
-					System.out.println("Don't add Duplicate course.");
+			String checkQuery = "SELECT * FROM registration WHERE student_id = ? AND c_id = ?";
+			try (PreparedStatement checkPs = connection.prepareStatement(checkQuery)) {
+				checkPs.setInt(1, studentId);
+				checkPs.setInt(2, registration.getCourseId());
+
+				ResultSet rs = checkPs.executeQuery();
+				if (rs.next()) {
+					System.out.println("Course already registered!");
 					connection.rollback();
 					return;
 				}
 			}
 
-			String query = "insert into registration(student_id, course_name, fees_paid) values (?, ?, ?)";
-			PreparedStatement preparedStatement = connection.prepareStatement(query);
-			preparedStatement.setInt(1, student.getId());
-			preparedStatement.setString(2, registration.getCourseName());
-			preparedStatement.setDouble(3, registration.getFeesPaid());
+			String insertQuery = "INSERT INTO registration(student_id, c_id, fees_paid) VALUES (?, ?, ?)";
+			try (PreparedStatement ps = connection.prepareStatement(insertQuery)) {
+				ps.setInt(1, studentId);
+				ps.setInt(2, registration.getCourseId());
+				ps.setDouble(3, registration.getFeesPaid());
 
-			int rowAffected = preparedStatement.executeUpdate();
-
-			if (rowAffected > 0) {
-				System.out.println(
-						"Student " + student.getName() + " is Register for Course " + registration.getCourseName());
-				connection.commit();
-				return;
+				int rows = ps.executeUpdate();
+				if (rows > 0) {
+					connection.commit();
+					System.out.println("Course Registered Successfully");
+				} else {
+					connection.rollback();
+					System.out.println("Registration Failed");
+				}
 			}
-			System.out.println("Student Not registered for the Course.");
-			connection.rollback();
 
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			try {
 				connection.rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
 			}
-			e.getMessage();
+			e.printStackTrace();
+		} finally {
+			try {
+				connection.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	public void updateCourseFee(Connection connection, int studentId, Registration registration) {
-		Student student = new StudentDAO().getStudentById(connection, studentId);
-		if (student == null) {
-			System.out.println("Student Not Found!!!");
-			return;
-		}
-
 		try {
-			String query = "update registration set fees_paid = ? where reg_id = ?";
-			PreparedStatement preparedStatement = connection.prepareStatement(query);
-			preparedStatement.setDouble(1, registration.getFeesPaid());
-			preparedStatement.setInt(2, registration.getRegId());
-
-			int rowAffected = preparedStatement.executeUpdate();
-
-			if (rowAffected > 0) {
-				System.out.println("Student " + student.getName() + " fee updated Successfully.");
+			Student student = new StudentDAO().getStudentById(connection, studentId);
+			if (student == null) {
+				System.out.println("Student Not Found!");
 				return;
 			}
-			System.out.println("Student fee not Updated.");
 
+			String query = "UPDATE registration SET fees_paid = ? WHERE reg_id = ? AND student_id = ?";
+			try (PreparedStatement ps = connection.prepareStatement(query)) {
+				ps.setDouble(1, registration.getFeesPaid());
+				ps.setInt(2, registration.getRegId());
+				ps.setInt(3, studentId);
+
+				int rows = ps.executeUpdate();
+				if (rows > 0) {
+					System.out.println("Fee updated for " + student.getName());
+				} else {
+					System.out.println("Invalid Registration ID or Student mismatch!");
+				}
+			}
 		} catch (SQLException e) {
-			e.getMessage();
+			e.printStackTrace();
 		}
 	}
 
 	public void cancelStudentRegistration(Connection connection, int regId, int studentId) {
-		Student student = new StudentDAO().getStudentById(connection, studentId);
-		if (student == null) {
-			System.out.println("Student Not Found!!!");
-			return;
-		}
-
-		List<Registration> list = getStudentCourseDetails(connection, studentId);
-		boolean found = false;
-		for (Registration r : list) {
-			if (r.getRegId() == regId) {
-				found = true;
-				break;
-			}
-		}
-
-		if (!found) {
-			System.out.println("Student Not Enrolled in this Course!!!");
-			return;
-		}
-
 		try {
-			String query = "delete from registration where reg_id = ?";
-			PreparedStatement ps = connection.prepareStatement(query);
-			ps.setInt(1, regId);
-
-			int rowAffected = ps.executeUpdate();
-
-			if (rowAffected > 0) {
-				System.out.println("Student " + student.getName() + " registration cancelled successfully.");
-			} else {
-				System.out.println("Cancellation failed!");
+			Student student = new StudentDAO().getStudentById(connection, studentId);
+			if (student == null) {
+				System.out.println("Student Not Found!");
+				return;
 			}
 
+			String query = "DELETE FROM registration WHERE reg_id = ? AND student_id = ?";
+
+			try (PreparedStatement ps = connection.prepareStatement(query)) {
+				ps.setInt(1, regId);
+				ps.setInt(2, studentId);
+
+				int rows = ps.executeUpdate();
+				if (rows > 0) {
+					System.out.println("Registration cancelled for " + student.getName());
+				} else {
+					System.out.println("Invalid reg_id or student mismatch!");
+				}
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void highPayingStudentDetail(Connection connection) {
-		try {
-			int studentId = 0;
-			int maxFeePaid = 0;
-			String name = "";
-			String query1 = "select count(*), sum(fees_paid) as sss, student_id "
-					+ "from registration group by student_id order by sss desc limit 1";
+		String query = "SELECT s.id, s.name, SUM(r.fees_paid) AS total_fee " + "FROM student s "
+				+ "JOIN registration r ON s.id = r.student_id " + "GROUP BY s.id, s.name " + "ORDER BY total_fee DESC "
+				+ "LIMIT 1";
 
-			PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
-
-			ResultSet resultSet1 = preparedStatement1.executeQuery();
-
-			if (resultSet1.next()) {
-				maxFeePaid = resultSet1.getInt("sss");
-				studentId = resultSet1.getInt("student_id");
+		try (PreparedStatement ps = connection.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+			if (rs.next()) {
+				String name = rs.getString("name");
+				double totalFee = rs.getDouble("total_fee");
+				System.out.println("Student " + name + " has Paid Maximum Fees: " + totalFee);
+			} else {
+				System.out.println("No registration data found!");
 			}
-
-			String query2 = "select name from student where id = ?";
-
-			PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
-			preparedStatement2.setInt(1, studentId);
-
-			ResultSet resultSet2 = preparedStatement2.executeQuery();
-
-			if (resultSet2.next()) {
-				name = resultSet2.getString("name");
-			}
-
-			if (studentId == 0 || maxFeePaid == 0 || name == null || name.trim().isEmpty()) {
-				System.out.println("Something Went Wrong!!!");
-				return;
-			}
-
-			System.out.println("Student " + name + " has Paid Maximum Fees " + maxFeePaid);
 		} catch (SQLException e) {
-			e.getMessage();
+			e.printStackTrace();
 		}
 	}
 
 	public void countStudentCourseWise(Connection connection) {
-		String query = " select r.course_name as cn, count(*) as cc from student s join registration r on s.id = r.student_id group by r.course_name";
+		String query = "SELECT c.c_name AS course_name, COUNT(r.student_id) AS total_students " + "FROM courses c "
+				+ "LEFT JOIN registration r ON c.c_id = r.c_id " + "GROUP BY c.c_id, c.c_name";
 
 		try (PreparedStatement ps = connection.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
-
 			while (rs.next()) {
-				int count = rs.getInt("cc");
-				String courses = rs.getString("cn");
-
-				if (courses == null) {
-					courses = "No Course";
-				}
-
-				System.out.println("| " + courses + " | " + count + " |");
+				String course = rs.getString("course_name");
+				int count = rs.getInt("total_students");
+				System.out.println("| " + course + " | " + count + " |");
 			}
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public List<Registration> getStudentCourseDetails(Connection connection, int studentId) {
-		List<Registration> list = new ArrayList<Registration>();
-		try {
-			String query = "select reg_id, student_id, course_name, fees_paid from registration where student_id = ?";
+		List<Registration> list = new ArrayList<>();
+		String query = "SELECT reg_id, student_id, c_id, fees_paid FROM registration WHERE student_id = ?";
+		try (PreparedStatement ps = connection.prepareStatement(query)) {
+			ps.setInt(1, studentId);
 
-			PreparedStatement preparedStatement = connection.prepareStatement(query);
-			preparedStatement.setInt(1, studentId);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				int regId = rs.getInt("reg_id");
+				int sid = rs.getInt("student_id");
+				int cId = rs.getInt("c_id");
+				double fee = rs.getDouble("fees_paid");
 
-			ResultSet resultSet2 = preparedStatement.executeQuery();
-
-			while (resultSet2.next()) {
-				int id = resultSet2.getInt("student_id");
-				int reg_id = resultSet2.getInt("reg_id");
-				String c_name = resultSet2.getString("course_name");
-				double fee = resultSet2.getDouble("fees_paid");
-				list.add(new Registration(reg_id, id, c_name, fee));
+				list.add(new Registration(regId, sid, cId, fee));
 			}
 		} catch (SQLException e) {
-			e.getMessage();
+			e.printStackTrace();
 		}
 		return list;
 	}
