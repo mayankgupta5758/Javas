@@ -1,0 +1,107 @@
+<%@ page import="java.util.List"%>
+<%@ page import="dao.CourseDAO"%>
+<%@ page import="model.Course"%>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+<link rel="stylesheet"
+	href="<%=application.getContextPath()%>/css/dashboard.css">
+</head>
+
+<body>
+	<%
+	List<Course> list = new CourseDAO().seeAllCourse();
+	%>
+	<div class="dashboard-river">
+		<div class="dashboard-container">
+			<div class="dashboard">
+				<div class="ui-row-2">
+					<div class="main-content">
+					<a type="submit" id="button-333"
+								href="<%=request.getContextPath()%>/views/dashboard.jsp">
+								 Back </a>
+						<div class="large-banner">
+							<h2>Course's Details Here...</h2>
+							<a type="submit" title="Explore"
+								href="<%=request.getContextPath()%>/views/course-form.jsp">
+								Add new Course </a>
+						</div>
+						<hr>
+
+						<%
+						if (request.getAttribute("deletecoursemsg") != null) {
+						%>
+						<h3><%=request.getAttribute("deletecoursemsg")%></h3>
+						<%
+						}
+						%>
+
+						<div class="featured-clay">
+
+							<%
+							if (list.size() > 0) {
+								for (int i = 0; i < list.size(); i++) {
+							%>
+							<div>
+								<div></div>
+								<div style="color: rgb(20, 188, 138);">
+
+									<h3>
+										Name:
+										<%=list.get(i).getcName()%></h3>
+									<p>
+										Id:
+										<%=list.get(i).getcId()%></p>
+									<p>
+										Duration: 
+										<%=list.get(i).getDuration()%></p>
+									<p>
+										Fees:
+										<%=list.get(i).getFees()%></p>
+									<p>
+										Trainer Name:
+										<%=list.get(i).getTrainerName()%></p>
+
+									<form action="<%=request.getContextPath()%>/editCouse"
+										method="get">
+
+										<input type="hidden" name="id"
+											value="<%=list.get(i).getcId()%>">
+
+										<button type="submit">Edit</button>
+
+									</form>
+									<form action="<%=request.getContextPath()%>/deleteCourse"
+										method="post">
+
+										<input type="hidden" name="id"
+											value="<%=list.get(i).getcId()%>">
+
+										<button type="submit">Delete</button>
+
+									</form>
+
+								</div>
+							</div>
+							<%
+							}
+							} else {
+							%>
+							<h1>No Course Yet...</h1>
+							<%
+							}
+							%>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

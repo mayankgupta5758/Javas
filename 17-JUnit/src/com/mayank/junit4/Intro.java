@@ -2,7 +2,7 @@ package com.mayank.junit4;
 
 public class Intro {
 	/*
-	 * Unit Testing · Testing specific units of code independently .
+	 * Unit Testing · Testing specific units of code independently.
 	 * 
 	 * Advantages of unit testing . Find bugs early . Easy to fix bugs . Reduce the
 	 * cost and time

@@ -1,15 +1,11 @@
 package com.mayank.junit4;
 
-import static org.junit.Assert.*;
-
 import java.util.Date;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import junit.framework.Assert;
 
 public class CalculaterTest {

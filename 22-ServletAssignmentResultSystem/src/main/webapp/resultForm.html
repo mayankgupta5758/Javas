@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Result Form</title>
+<style>
+body {
+	color: bisque;
+	background-color: rgb(226, 179, 187);
+	text-align: center;
+	font-family: 'Times New Roman', Times, serif;
+	font-size: 20px;
+}
+
+button {
+	color: rgb(226, 179, 187);
+	background-color: bisque;
+	border-radius: 25px;
+	width: auto;
+	height: 28px;
+	cursor: pointer;
+	font-weight: 900;
+}
+</style>
+</head>
+<body>
+	<form action="click" method="post">
+		<div>
+			<h1>Enter Your Name:</h1>
+			<input type="text" required name="name" placeholder="Enter Your Name">
+		</div>
+		
+		<div>
+			<h1>Enter Your Roll Number:</h1>
+			<input type="number" required name="roll"
+				placeholder="Enter Your Roll Number">
+		</div>
+
+		<div>
+			<h1>Enter Subject 1 Marks:</h1>
+			<input type="number" required name="sub1" placeholder="Enter Subject 1 Marks">
+		</div>
+		
+		<div>
+			<h1>Enter Subject 2 Marks:</h1>
+			<input type="number" required name="sub2" placeholder="Enter Subject 2 Marks">
+		</div>
+		
+		<div>
+			<h1>Enter Subject 3 Marks:</h1>
+			<input type="number" required name="sub3" placeholder="Enter Subject 3 Marks">
+		</div>
+
+		<button type="submit">Submit</button>
+	</form>
+</body>
+</html>

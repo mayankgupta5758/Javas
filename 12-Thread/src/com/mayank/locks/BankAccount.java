@@ -48,7 +48,6 @@ public class BankAccount extends Thread {
 //				System.out.println(Thread.currentThread().getName() + " could not acquire the lock, will try again later.");
 //			}
 //		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //	}

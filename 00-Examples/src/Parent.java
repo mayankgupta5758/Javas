@@ -5,7 +5,7 @@ public class Parent {
 	}
 	
 //	private Parent() {
-//		
+//		System.out.println("Fdg");
 //	}
 
 }

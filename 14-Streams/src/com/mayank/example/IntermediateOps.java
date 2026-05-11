@@ -39,8 +39,5 @@ public class IntermediateOps {
 		List<Integer> output = input.stream().takeWhile(x->x%2 == 0).toList();
 		List<Integer> first3 = IntStream.rangeClosed(1,10).boxed().skip(3).toList();
 		System.out.println(output);
-
-		
-
 	}
 }

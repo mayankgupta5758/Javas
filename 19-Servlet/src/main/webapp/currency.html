@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Currency Converter</title>
+</head>
+<body>
+<form action="convert" method="post">
+		<div>
+		<h1>Amount</h1>
+		<input required placeholder="Enter Amount" name="amount">
+		</div>
+		
+		<div>
+		<select required name="from">
+				<option value="">Select From</option>
+				<option value="USD">USD</option>
+			</select>
+		</div>
+		
+		<div>
+		<select required name="to">
+				<option value="">Select to</option>
+				<option value="IND">IND</option>
+			</select>
+		</div>
+		<button type="submit">Submit</button>
+</form>
+</body>
+</html>

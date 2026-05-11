@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Leave Form</title>
+<style>
+body {
+	color: bisque;
+	background-color: rgb(226, 179, 187);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	font-family: 'Times New Roman', Times, serif;
+	font-size: 20px;
+}
+
+button {
+	color: rgb(226, 179, 187);
+	background-color: bisque;
+	border-radius: 25px;
+	width: auto;
+	height: 28px;
+	cursor: pointer;
+	font-weight: 900;
+}
+</style>
+</head>
+<body>
+	<form action="click" method="post">
+		<div>
+			<h1>Enter Your Name:</h1>
+			<input type="text" required name="name" placeholder="Enter Your Name">
+		</div>
+		
+		<div>
+			<h1>Enter Your Id:</h1>
+			<input type="number" required name="id"
+				placeholder="Enter Your Id">
+		</div>
+		
+		<div>
+			<h1>Enter Your Department:</h1>
+			<input type="text" required name="dept" placeholder="Enter Your Department">
+		</div>
+
+		<div>
+			<h1>Enter Days for Leave:</h1>
+			<input type="number" required name="days" placeholder="Enter Days for Leave">
+		</div>
+
+		<div>
+			<h1>Select Leave Type:</h1>
+			<select required name="leave" id="leave">
+				<option value="">Select Leave Type</option>
+				<option value="Java Full Stack">Sick Leave</option>
+				<option value="Python Full Stack">Casual Leave</option>
+				<option value="MERN Stack">Emergency Leave</option>
+				<option value="Data Analytics">Masti Leave</option>
+			</select>
+		</div>
+
+		<div>
+			<h1>Enter Reason for Leave:</h1>
+			<textarea required rows="10" cols="40" name="reason"></textarea>			
+		</div>
+
+		<button type="submit">Submit</button>
+	</form>
+</body>
+</html>
