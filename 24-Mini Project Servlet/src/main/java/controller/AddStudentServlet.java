@@ -9,11 +9,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Student;
-
+import util.UtilityFunction;
 
 @WebServlet("/addStudent")
-public class AddStudentServlet extends HttpServlet{
-	
+public class AddStudentServlet extends HttpServlet {
+
 	private StudentDAO studentDAO = new StudentDAO();
 
 	@Override
@@ -23,16 +23,32 @@ public class AddStudentServlet extends HttpServlet{
 		int age = Integer.parseInt(req.getParameter("age"));
 		String city = req.getParameter("city");
 		String email = req.getParameter("email");
-		
-		Student student = new Student(name, email, phone, age, city);
-		
-		boolean status = studentDAO.addStudent(student);
-		
-		if(status) {
-			resp.sendRedirect(req.getContextPath() + "/views/seeallstudent.jsp");
+
+		if (age <= 17) {
+			req.getSession().setAttribute("addstdmsg", "Add Student Failed. Age must be 18+");
+			resp.sendRedirect(req.getContextPath() + "/views/student-form.jsp");
 			return;
-		} 
-		
+		}
+		if (phone.length() != 10) {
+			req.getSession().setAttribute("addstdmsg", "Add Student Failed. Phone number must be 10 digit long");
+			resp.sendRedirect(req.getContextPath() + "/views/student-form.jsp");
+			return;
+		}
+		if (!UtilityFunction.isValidEmail(email)) {
+			req.getSession().setAttribute("addstdmsg", "Add Student Failed. Enter valid email.");
+			resp.sendRedirect(req.getContextPath() + "/views/student-form.jsp");
+			return;
+		}
+
+		Student student = new Student(name, email, phone, age, city);
+
+		boolean status = studentDAO.addStudent(student);
+
+		if (status) {
+			resp.sendRedirect(req.getContextPath() + "/views/student-list.jsp");
+			return;
+		}
+
 		req.getSession().setAttribute("addstdmsg", "Add Student Failed");
 		resp.sendRedirect(req.getContextPath() + "/views/student-form.jsp");
 	}

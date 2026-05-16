@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Course;
+import util.UtilityFunction;
 
 @WebServlet("/addCourse")
 public class AddCourseServlet extends HttpServlet{
@@ -22,6 +23,16 @@ public class AddCourseServlet extends HttpServlet{
 		double fees = Double.parseDouble(req.getParameter("fees"));
 		String trainerName = req.getParameter("trainerName");
 		
+		if(fees <= 0) {
+			req.getSession().setAttribute("addcoursedmsg", "Add Course Failed. Fees Must be +ve");
+			resp.sendRedirect(req.getContextPath() + "/views/course-form.jsp");
+			return;
+		}
+		if(!UtilityFunction.isValidDuration(duration)) {
+			req.getSession().setAttribute("addcoursedmsg", "Add Course Failed. Duration Must be +ve");
+			resp.sendRedirect(req.getContextPath() + "/views/course-form.jsp");
+			return;
+		}
 		Course course = new Course(name, duration, fees, trainerName);
 		
 		boolean status = courseDAO.addCourse(course);
@@ -31,7 +42,7 @@ public class AddCourseServlet extends HttpServlet{
 			return;
 		} 
 		
-		req.getSession().setAttribute("addstdmsg", "Add Course Failed");
+		req.getSession().setAttribute("addcoursedmsg", "Add Course Failed");
 		resp.sendRedirect(req.getContextPath() + "/views/course-form.jsp");
 	}
 }

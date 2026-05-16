@@ -132,4 +132,20 @@ public class StudentDAO {
 		}
 		return false;
 	}
+	
+	public int totalNumberOfStudent() {
+		String query = "select count(*) as c from student";
+		int totalStudent = 0;
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(query);
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			if (resultSet.next()) {
+				totalStudent = resultSet.getInt("c");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return totalStudent;
+	}
 }

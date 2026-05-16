@@ -10,15 +10,36 @@
 </head>
 <body>
 	<div class="circle-form">
-	<h3><% if(request.getSession().getAttribute("updatecoursemsg") != null) { %> <%= request.getSession().getAttribute("updatecoursemsg") %> <% } %></h3>
-	
+
+		
+			<%
+			if (session.getAttribute("userName") == null) {
+				response.sendRedirect(request.getContextPath() + "/login.jsp");
+				return;
+			}
+			%>
+			<%
+			if (request.getSession().getAttribute("addcoursedmsg") != null) {
+			%>
+			<h3 style="color: red;">
+			<%=request.getSession().getAttribute("addcoursedmsg")%>
+			</h3>
+			<%
+			}
+			%>
+		
+		<% session.removeAttribute("addcoursedmsg"); %>
+
 		<form action="<%=request.getContextPath()%>/addCourse" method="post">
+			<a type="submit" id="button-333"
+				href="<%=request.getContextPath()%>/views/course-list.jsp"> Back
+			</a>
 			<h2>Add Course Details Here...</h2>
-			<input name="name" placeholder="Enter Name" required>
-			<input name="duration" placeholder="Enter Duration(in Weeks)" required>
-			<input name="fees" placeholder="Enter Fees" required>
-			<input name="trainerName" placeholder="Enter Trainer Name" required>
-			
+			<input name="name" placeholder="Enter Name" required> <input
+				name="duration" placeholder="Enter Duration(in Weeks)" required>
+			<input name="fees" placeholder="Enter Fees" required> <input
+				name="trainerName" placeholder="Enter Trainer Name" required>
+
 			<button type="submit">Add Course</button>
 		</form>
 	</div>

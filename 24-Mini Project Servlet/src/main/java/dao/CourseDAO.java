@@ -28,15 +28,15 @@ public class CourseDAO {
 			if (rowAffected > 0) {
 				return true;
 			}
-			
+
 			return false;
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
-	
+
 	public List<Course> seeAllCourse() {
 		String query = "select * from course";
 		List<Course> list = new ArrayList<>();
@@ -62,7 +62,7 @@ public class CourseDAO {
 		}
 		return list;
 	}
-	
+
 	public Course getCourseById(int id) {
 		String query = "select * from course where c_id = ?";
 		Course course = null;
@@ -87,21 +87,21 @@ public class CourseDAO {
 		}
 		return course;
 	}
-	
+
 	public boolean updateCourse(Course course) {
 		String query = "update course set c_name=?, duration=?, fees=?, trainer_name=? where c_id=?";
-		
+
 		try {
 			PreparedStatement preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, course.getcName());
 			preparedStatement.setString(2, course.getDuration());
 			preparedStatement.setDouble(3, course.getFees());
-			preparedStatement.setString(5, course.getTrainerName());
-			preparedStatement.setInt(6, course.getcId());
-			
+			preparedStatement.setString(4, course.getTrainerName());
+			preparedStatement.setInt(5, course.getcId());
+
 			int rowAffected = preparedStatement.executeUpdate();
-			
-			if(rowAffected > 0) {
+
+			if (rowAffected > 0) {
 				return true;
 			}
 			return false;
@@ -110,23 +110,37 @@ public class CourseDAO {
 		}
 		return false;
 	}
-	
-	public boolean deleteCourse(int id) {
+
+	public String deleteCourse(int id) {
 		String query = "delete from course where c_id=?";
-		
+
+		try {
+			PreparedStatement ps = connection.prepareStatement(query);
+			ps.setInt(1, id);
+			int rowAffected = ps.executeUpdate();
+			if (rowAffected > 0) {
+				return "Course Deleted Successfully";
+			}
+			
+			return "Failed To Delete Course";
+		} catch (SQLException e) {
+			return "Cannot Delete Course. Students Are Enrolled.";
+		}
+	}
+
+	public int totalNumberOfCourse() {
+		String query = "select count(*) as c from course";
+		int totalCourse = 0;
+
 		try {
 			PreparedStatement preparedStatement = connection.prepareStatement(query);
-			preparedStatement.setInt(1, id);
-			
-			int rowAffected = preparedStatement.executeUpdate();
-			
-			if(rowAffected > 0) {
-				return true;
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				totalCourse = resultSet.getInt("c");
 			}
-			return false;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return totalCourse;
 	}
 }

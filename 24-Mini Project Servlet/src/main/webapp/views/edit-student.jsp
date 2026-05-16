@@ -16,19 +16,26 @@ Student student = (Student) request.getAttribute("student");
 	href="<%=application.getContextPath()%>/css/style.css">
 </head>
 <body>
+<%if (session.getAttribute("userName") == null) {
+	response.sendRedirect(request.getContextPath() + "/login.jsp");
+	return;
+} %>
 	<div class="circle-form">
-		<h3>
-			<%
-			if (request.getAttribute("updatemsg") != null) {
-			%>
-			<%=request.getAttribute("updatemsg")%>
-			<%
-			}
-			%>
-		</h3>
+
 		<form action="<%=request.getContextPath()%>/updateStudent"
 			method="post">
-
+				<%
+				if (request.getAttribute("updatemsg") != null) {
+				%>
+				<h3 style="color: red;">
+				<%=request.getAttribute("updatemsg")%></h3>
+				<%
+				}
+				%>
+			<% session.removeAttribute("updatemsg"); %>
+			<a type="submit" id="button-333"
+				href="<%=request.getContextPath()%>/views/student-list.jsp">
+				Back </a>
 			<h2>Update Student Details Here...</h2>
 
 			<input type="hidden" name="id" value="<%=student.getsId()%>">

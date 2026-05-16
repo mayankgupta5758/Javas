@@ -13,6 +13,10 @@
 </head>
 
 <body>
+<%if (session.getAttribute("userName") == null) {
+	response.sendRedirect(request.getContextPath() + "/login.jsp");
+	return;
+} %>
 	<%
 	List<Student> list = new StudentDAO().seeAllStudent();
 	%>
@@ -35,11 +39,11 @@
 						<%
 						if (request.getAttribute("deletestdmsg") != null) {
 						%>
-						<h3><%=request.getAttribute("deletestdmsg")%></h3>
+						<h3 style="color: red;"><%=request.getAttribute("deletestdmsg")%></h3>
 						<%
 						}
 						%>
-
+<% session.removeAttribute("deletestdmsg"); %>
 						<div class="featured-clay">
 
 							<%
@@ -63,7 +67,7 @@
 										Age:
 										<%=list.get(i).getAge()%></p>
 									<p>
-										City:
+										City:<br /> <br /> <br /> <br /> <br /> <br /> <br />
 										<%=list.get(i).getCity()%></p>
 									<p>
 										Phone: +91

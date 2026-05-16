@@ -7,7 +7,7 @@
 
 <head>
 <meta charset="UTF-8">
-<title>Dashboard</title>
+<title>Course</title>
 <link rel="stylesheet"
 	href="<%=application.getContextPath()%>/css/dashboard.css">
 </head>
@@ -15,15 +15,19 @@
 <body>
 	<%
 	List<Course> list = new CourseDAO().seeAllCourse();
+	if (session.getAttribute("userName") == null) {
+		response.sendRedirect(request.getContextPath() + "/login.jsp");
+		return;
+	}
 	%>
 	<div class="dashboard-river">
 		<div class="dashboard-container">
 			<div class="dashboard">
 				<div class="ui-row-2">
 					<div class="main-content">
-					<a type="submit" id="button-333"
-								href="<%=request.getContextPath()%>/views/dashboard.jsp">
-								 Back </a>
+						<a type="submit" id="button-333"
+							href="<%=request.getContextPath()%>/views/dashboard.jsp">
+							Back </a>
 						<div class="large-banner">
 							<h2>Course's Details Here...</h2>
 							<a type="submit" title="Explore"
@@ -35,10 +39,12 @@
 						<%
 						if (request.getAttribute("deletecoursemsg") != null) {
 						%>
-						<h3><%=request.getAttribute("deletecoursemsg")%></h3>
+						<h3 style="color: red;"><%=request.getAttribute("deletecoursemsg")%></h3>
 						<%
 						}
 						%>
+
+<% session.removeAttribute("deletecoursemsg"); %>
 
 						<div class="featured-clay">
 
@@ -57,7 +63,7 @@
 										Id:
 										<%=list.get(i).getcId()%></p>
 									<p>
-										Duration: 
+										Duration:
 										<%=list.get(i).getDuration()%></p>
 									<p>
 										Fees:
@@ -66,7 +72,7 @@
 										Trainer Name:
 										<%=list.get(i).getTrainerName()%></p>
 
-									<form action="<%=request.getContextPath()%>/editCouse"
+									<form action="<%=request.getContextPath()%>/editCourse"
 										method="get">
 
 										<input type="hidden" name="id"

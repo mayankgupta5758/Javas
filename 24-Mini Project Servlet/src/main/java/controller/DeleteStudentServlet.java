@@ -21,10 +21,10 @@ public class DeleteStudentServlet extends HttpServlet{
 		boolean status = studentDAO.deleteStudent(id);
 		
 		if(status) {
-			resp.sendRedirect(req.getContextPath() + "/views/seeallstudent.jsp");
+			resp.sendRedirect(req.getContextPath() + "/views/student-list.jsp");
 			return;
 		} 
 		req.setAttribute("deletestdmsg", "Delete Student Failed");	
-		resp.sendRedirect(req.getContextPath() + "/views/seeallstudent.jsp");
+		resp.sendRedirect(req.getContextPath() + "/views/student-list.jsp");
 	}
 }

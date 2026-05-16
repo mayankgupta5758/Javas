@@ -9,17 +9,36 @@
 	href="<%=application.getContextPath()%>/css/style.css">
 </head>
 <body>
+	<%
+	if (session.getAttribute("userName") == null) {
+		response.sendRedirect(request.getContextPath() + "/login.jsp");
+		return;
+	}
+	%>
 	<div class="circle-form">
-	<h3><% if(request.getSession().getAttribute("addstdmsg") != null) { %> <%= request.getSession().getAttribute("addstdmsg") %> <% } %></h3>
-	
 		<form action="<%=request.getContextPath()%>/addStudent" method="post">
+			<h3 style="color: red;">
+				<%
+				if (request.getSession().getAttribute("addstdmsg") != null) {
+				%>
+				<%=request.getSession().getAttribute("addstdmsg")%>
+				<%
+				}
+				%>
+			</h3>
+			<%
+			session.removeAttribute("addstdmsg");
+			%>
+			<a type="submit" id="button-333"
+				href="<%=request.getContextPath()%>/views/student-list.jsp">
+				Back </a>
 			<h2>Add Student Details Here...</h2>
-			<input name="name" placeholder="Enter Name" required>
-			<input name="email" placeholder="Enter Email" required>
-			<input name="age" placeholder="Enter Age" required>
-			<input name="phone" placeholder="Enter Phone Number" required>
-			<input name="city" placeholder="Enter City" required>
-			
+			<input name="name" placeholder="Enter Name" required> <input
+				name="email" placeholder="Enter Email" required> <input
+				name="age" placeholder="Enter Age" required> <input
+				name="phone" placeholder="Enter Phone Number" required> <input
+				name="city" placeholder="Enter City" required>
+
 			<button type="submit">Add Student</button>
 		</form>
 	</div>
