@@ -80,44 +80,51 @@
 
 							<div class="clay-category">
 								<p>Total Number of Registration</p>
-								<p><%= totalReg %></p>
+								<p><%=totalReg%></p>
 							</div>
 						</div>
 					</div>
 				</div>
 
-				<div class="addbutton">
-					<div class="">
-						<form
-							action="<%=request.getContextPath()%>/views/student-list.jsp"
-							method="post">
-							<button type="submit" id="button-333" role="button">See
-								All Student</button>
-						</form>
+				<div class="addbutton" style="display:flex; gap:30px; flex-direction:row;">
+					<div>
+						<div class="a" style="padding: 30px">
+							<form
+								action="<%=request.getContextPath()%>/views/student-list.jsp"
+								method="post">
+								<button type="submit" id="button-333" role="button">See
+									All Student</button>
+							</form>
+						</div>
+
+						<div class="a" style="padding: 30px">
+							<form
+								action="<%=request.getContextPath()%>/views/course-list.jsp"
+								method="get">
+								<button type="submit" id="button-333" role="button">See
+									All Course</button>
+							</form>
+						</div>
 					</div>
 
-					<div class="">
-						<form
-							action="<%=request.getContextPath()%>/views/course-list.jsp"
-							method="get">
-							<button type="submit" id="button-333" role="button">See
-								All Course</button>
-						</form>
-					</div>
+					<div>
+						<div class="a" style="padding: 30px">
+							<form
+								action="<%=request.getContextPath()%>/views/registration-list.jsp"
+								method="post">
+								<button type="submit" id="button-333" role="button">See
+									All Registration</button>
+							</form>
+						</div>
 
-					<div class="">
-						<form action="<%=request.getContextPath()%>/views/registration-list.jsp"
-							method="post">
-							<button type="submit" id="button-333" role="button">See
-								All Registration</button>
-						</form>
-					</div>
-					
-					<div class="">
-						<form action="<%=request.getContextPath()%>/views/filter-list.jsp"
-							method="post">
-							<button type="submit" id="button-333" role="button">Apply Filter</button>
-						</form>
+						<div class="a" style="padding: 30px">
+							<form
+								action="<%=request.getContextPath()%>/views/filter-list.jsp"
+								method="post">
+								<button type="submit" id="button-333" role="button">Apply
+									Filter</button>
+							</form>
+						</div>
 					</div>
 
 				</div>
