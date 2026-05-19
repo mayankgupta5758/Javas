@@ -25,17 +25,24 @@ public class AddStudentServlet extends HttpServlet {
 		String email = req.getParameter("email");
 
 		if (age <= 17) {
-			req.getSession().setAttribute("addstdmsg", "Add Student Failed. Age must be 18+");
+			req.getSession().setAttribute("addstdfailmsg", "Add Student Failed. Age must be 18+");
 			resp.sendRedirect(req.getContextPath() + "/views/student-form.jsp");
 			return;
 		}
 		if (phone.length() != 10) {
-			req.getSession().setAttribute("addstdmsg", "Add Student Failed. Phone number must be 10 digit long");
+			req.getSession().setAttribute("addstdfailmsg", "Add Student Failed. Phone number must be 10 digit long");
 			resp.sendRedirect(req.getContextPath() + "/views/student-form.jsp");
 			return;
 		}
 		if (!UtilityFunction.isValidEmail(email)) {
-			req.getSession().setAttribute("addstdmsg", "Add Student Failed. Enter valid email.");
+			req.getSession().setAttribute("addstdfailmsg", "Add Student Failed. Enter valid email.");
+			resp.sendRedirect(req.getContextPath() + "/views/student-form.jsp");
+			return;
+		}
+		
+		String chkDup = studentDAO.checkDuplicateStudent(name, email, phone);
+		if(chkDup != null) {
+			req.getSession().setAttribute("addstdfailmsg", chkDup);
 			resp.sendRedirect(req.getContextPath() + "/views/student-form.jsp");
 			return;
 		}
@@ -43,13 +50,13 @@ public class AddStudentServlet extends HttpServlet {
 		Student student = new Student(name, email, phone, age, city);
 
 		boolean status = studentDAO.addStudent(student);
-
 		if (status) {
+			req.getSession().setAttribute("addstdpassmsg", "Student Added Successfully.");
 			resp.sendRedirect(req.getContextPath() + "/views/student-list.jsp");
 			return;
 		}
 
-		req.getSession().setAttribute("addstdmsg", "Add Student Failed");
+		req.getSession().setAttribute("addstdfailmsg", "Add Student Failed");
 		resp.sendRedirect(req.getContextPath() + "/views/student-form.jsp");
 	}
 }

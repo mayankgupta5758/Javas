@@ -46,15 +46,14 @@ if (session.getAttribute("userName") == null) {
 		</a>
 
 		<%
-		if (session.getAttribute("addregistrationmsg") != null) {
+		if (session.getAttribute("addregfailmsg") != null) {
 		%>
 
 		<h3 style="color: red;">
-			<%=session.getAttribute("addregistrationmsg")%>
+			<%=session.getAttribute("addregfailmsg")%>
 		</h3>
-
 		<%
-		session.removeAttribute("addregistrationmsg");
+		session.removeAttribute("addregfailmsg");
 		}
 		%>
 
@@ -122,7 +121,8 @@ if (session.getAttribute("userName") == null) {
 
 		</div>
 
-		<input type="date" name="registrationDate" required>
+		<input type="date" name="registrationDate"
+	max="<%=java.time.LocalDate.now()%>" required>
 
 		<!-- STATUS DROPDOWN -->
 		<div class="dropdown dropdown-1">

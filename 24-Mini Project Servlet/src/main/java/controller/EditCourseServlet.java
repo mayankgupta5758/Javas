@@ -16,7 +16,6 @@ import model.Course;
 public class EditCourseServlet  extends HttpServlet{
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         int id = Integer.parseInt(req.getParameter("id"));
         System.out.println(id);
         CourseDAO dao = new CourseDAO();

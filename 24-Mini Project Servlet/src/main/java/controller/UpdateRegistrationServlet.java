@@ -16,86 +16,50 @@ import model.Registration;
 public class UpdateRegistrationServlet extends HttpServlet {
 
 	@Override
-	protected void doPost(HttpServletRequest req,
-			HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		int id = Integer.parseInt(req.getParameter("id"));
-
-		int studentId =
-				Integer.parseInt(req.getParameter("studentId"));
-
-		int courseId =
-				Integer.parseInt(req.getParameter("courseId"));
-
-		Date registrationDate =
-				Date.valueOf(req.getParameter("registrationDate"));
-
+		int studentId = Integer.parseInt(req.getParameter("studentId"));
+		int courseId = Integer.parseInt(req.getParameter("courseId"));
+		Date registrationDate = Date.valueOf(req.getParameter("registrationDate"));
 		String status = req.getParameter("status");
 
-		Registration registration =
-				new Registration(
-						id,
-						studentId,
-						courseId,
-						registrationDate,
-						status
-				);
+		Registration registration = new Registration(id, studentId, courseId, registrationDate, status);
+
+		Date currentDate = new Date(System.currentTimeMillis());
+
+		if (registrationDate.after(currentDate)) {
+			req.getSession().setAttribute("updatregfailemsg", "Registration date cannot be future date.");
+			req.setAttribute("registration", registration);
+
+			RequestDispatcher rd = req.getRequestDispatcher("/views/edit-registration.jsp");
+			rd.forward(req, resp);
+			return;
+		}
 
 		RegistrationDAO dao = new RegistrationDAO();
 
-		// DUPLICATE CHECK
-		boolean alreadyExist =
-				dao.alreadyRegisteredForUpdate(
-						id,
-						studentId,
-						courseId
-				);
+		boolean alreadyExist = dao.alreadyRegisteredForUpdate(id, studentId, courseId);
 
-		if(alreadyExist) {
-
-			req.setAttribute(
-					"updatregistrationemsg",
-					"Student Already Registered In This Course."
-			);
-
+		if (alreadyExist) {
+			req.getSession().setAttribute("updatregfailemsg", "Student Already Registered In This Course.");
 			req.setAttribute("registration", registration);
-
-			RequestDispatcher rd =
-					req.getRequestDispatcher(
-							"/views/edit-registration.jsp"
-					);
-
+			RequestDispatcher rd = req.getRequestDispatcher("/views/edit-registration.jsp");
 			rd.forward(req, resp);
-
 			return;
 		}
 
-		boolean result =
-				dao.updateRegistration(registration);
+		boolean result = dao.updateRegistration(registration);
 
-		if(result) {
-
-			resp.sendRedirect(
-					req.getContextPath()
-					+ "/views/registration-list.jsp"
-			);
-
+		if (result) {
+			req.getSession().setAttribute("updateregpassmsg", "Student Update Successfully.");
+			resp.sendRedirect(req.getContextPath() + "/views/registration-list.jsp");
 			return;
 		}
 
-		req.setAttribute(
-				"updatregistrationemsg",
-				"Update Registration Failed"
-		);
-
+		req.getSession().setAttribute("updatregfailemsg", "Update Registration Failed");
 		req.setAttribute("registration", registration);
-
-		RequestDispatcher rd =
-				req.getRequestDispatcher(
-						"/views/edit-registration.jsp"
-				);
-
+		RequestDispatcher rd = req.getRequestDispatcher("/views/edit-registration.jsp");
 		rd.forward(req, resp);
 	}
 }

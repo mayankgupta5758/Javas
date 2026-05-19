@@ -28,18 +28,26 @@ public class UpdateCourseServlet extends HttpServlet {
 		if (fees <= 0) {
 			Course course = courseDAO.getCourseById(id);
 			req.setAttribute("course", course);
-			req.setAttribute("updatcourseemsg", "Add Course Failed. Fees Must be +ve");
+			req.getSession().setAttribute("updatcoursefailemsg", "Add Course Failed. Fees Must be +ve");
 			req.getRequestDispatcher("/views/edit-course.jsp").forward(req, resp);
 			return;
 		}
 		if (!UtilityFunction.isValidDuration(duration)) {
 			Course course = courseDAO.getCourseById(id);
 			req.setAttribute("course", course);
-			req.setAttribute("updatcourseemsg", "Add Course Failed. Duration Must be +ve");
+			req.getSession().setAttribute("updatcoursefailemsg", "Add Course Failed. Duration Must be +ve");
 			req.getRequestDispatcher("/views/edit-course.jsp").forward(req, resp);
 			return;
 		}
 
+		String chkDup = courseDAO.checkDuplicateCourseForUpdate(id, name, trainerName);
+		if(chkDup != null) {
+			Course course = courseDAO.getCourseById(id);
+			req.setAttribute("course", course);
+			req.getSession().setAttribute("updatcoursefailemsg", chkDup);
+			req.getRequestDispatcher("/views/edit-course.jsp").forward(req, resp);
+			return;
+		}
 		Course s = new Course(id, name, duration, fees, trainerName);
 
 		CourseDAO dao = new CourseDAO();
@@ -47,10 +55,11 @@ public class UpdateCourseServlet extends HttpServlet {
 		boolean status = dao.updateCourse(s);
 
 		if (status) {
+			req.getSession().setAttribute("updatecoursepassmsg", "Update Course Successfully.");
 			resp.sendRedirect(req.getContextPath() + "/views/course-list.jsp");
 			return;
 		}
-		req.setAttribute("updatcourseemsg", "Update Course Failed");
+		req.getSession().setAttribute("updatcoursefailemsg", "Update Course Failed");
 		resp.sendRedirect(req.getContextPath() + "/views/edit-course.jsp");
 	}
 }

@@ -37,6 +37,32 @@ public class CourseDAO {
 		return false;
 	}
 
+	public String checkDuplicateCourse(String name, String trainerName) {
+		String query = "select * from course where c_name=? OR trainer_name=?";
+
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+			preparedStatement.setString(1, name);
+			preparedStatement.setString(2, trainerName);
+
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			while (resultSet.next()) {
+				if (resultSet.getString("c_name").equalsIgnoreCase(name)) {
+					return "Course Name Already Exists";
+				}
+
+				if (resultSet.getString("trainer_name").equalsIgnoreCase(trainerName)) {
+					return "Trainer Name Already Exists";
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public List<Course> seeAllCourse() {
 		String query = "select * from course";
 		List<Course> list = new ArrayList<>();
@@ -111,6 +137,31 @@ public class CourseDAO {
 		return false;
 	}
 
+	public String checkDuplicateCourseForUpdate(int id, String name, String trainerName) {
+		String query = "select * from course where " + "(c_name=? OR trainer_name=?) AND c_id != ?";
+
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+			preparedStatement.setString(1, name);
+			preparedStatement.setString(2, trainerName);
+			preparedStatement.setInt(3, id);
+
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				if (resultSet.getString("c_name").equalsIgnoreCase(name)) {
+					return "Course Name Already Exists";
+				}
+				if (resultSet.getString("trainer_name").equalsIgnoreCase(trainerName)) {
+					return "Trainer Name Already Exists";
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public String deleteCourse(int id) {
 		String query = "delete from course where c_id=?";
 
@@ -121,7 +172,7 @@ public class CourseDAO {
 			if (rowAffected > 0) {
 				return "Course Deleted Successfully";
 			}
-			
+
 			return "Failed To Delete Course";
 		} catch (SQLException e) {
 			return "Cannot Delete Course. Students Are Enrolled.";

@@ -1,7 +1,6 @@
 package controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 
 import dao.AdminDAO;
@@ -23,18 +22,28 @@ public class LoginServlet extends HttpServlet {
 		String userName = req.getParameter("userName");
 		String password = req.getParameter("password");
 
+		String remember = req.getParameter("remember");
 		AdminDAO adminDAO = new AdminDAO();
 
 		List<String> list = adminDAO.getAdminCredentials();
+
 		if (userName.equals(list.get(0)) && password.equals(list.get(1))) {
-			HttpSession httpSession = req.getSession();
-			httpSession.setAttribute("userName", userName);
-			Cookie cookie = new Cookie("userName", userName);
-			cookie.setMaxAge(3600);
-			resp.addCookie(cookie);
+			HttpSession session = req.getSession();
+			session.setAttribute("userName", userName);
+
+			if (remember != null) {
+				Cookie cookie = new Cookie("rememberUser", userName);
+				cookie.setMaxAge(60 * 60);
+				resp.addCookie(cookie);
+			} else {
+				Cookie cookie = new Cookie("rememberUser", "");
+				cookie.setMaxAge(0);
+				resp.addCookie(cookie);
+			}
+			req.getSession().setAttribute("adminpassmsg", "LoggedIn Successfully.");
 			resp.sendRedirect(req.getContextPath() + "/views/dashboard.jsp");
 		} else {
-			req.setAttribute("adminmsg", "Admin Login Failed!!!");
+			req.getSession().setAttribute("adminfailmsg", "Admin Login Failed!!!");
 			RequestDispatcher dispatcher = req.getRequestDispatcher("/login.jsp");
 			dispatcher.forward(req, resp);
 		}

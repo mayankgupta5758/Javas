@@ -37,6 +37,29 @@ public class StudentDAO {
 		return false;
 	}
 
+	public String checkDuplicateStudent(String name, String email, String phone) {
+		String query = "select * from student where s_name=? OR email=?";
+		
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, name);
+			preparedStatement.setString(2, email);
+
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				if (resultSet.getString("s_name").equalsIgnoreCase(name)) {
+					return "Student Name Already Exists";
+				}
+				if (resultSet.getString("email").equalsIgnoreCase(email)) {
+					return "Student Email Already Exists";
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public List<Student> seeAllStudent() {
 		String query = "select * from student";
 		List<Student> list = new ArrayList<>();
@@ -92,7 +115,7 @@ public class StudentDAO {
 
 	public boolean updateStudent(Student student) {
 		String query = "update student set s_name=?, email=?, age=?, city=?, phone=? where s_id=?";
-		
+
 		try {
 			PreparedStatement preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, student.getsName());
@@ -101,10 +124,9 @@ public class StudentDAO {
 			preparedStatement.setString(4, student.getCity());
 			preparedStatement.setString(5, student.getPhone());
 			preparedStatement.setInt(6, student.getsId());
-			
+
 			int rowAffected = preparedStatement.executeUpdate();
-			
-			if(rowAffected > 0) {
+			if (rowAffected > 0) {
 				return true;
 			}
 			return false;
@@ -113,26 +135,51 @@ public class StudentDAO {
 		}
 		return false;
 	}
-	
-	public boolean deleteStudent(int id) {
+
+	public String checkDuplicateStudentForUpdate(int id, String name, String email, String phone) {
+		String query = "select * from student where (s_name=? OR email=?) AND s_id != ?";
+
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, name);
+			preparedStatement.setString(2, email);
+			preparedStatement.setInt(3, id);
+
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				if (resultSet.getString("s_name").equalsIgnoreCase(name)) {
+					return "Student Name Already Exists";
+				}
+				if (resultSet.getString("email").equalsIgnoreCase(email)) {
+					return "Student Email Already Exists";
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String deleteStudent(int id) {
 		String query = "delete from student where s_id=?";
-		
+
 		try {
 			PreparedStatement preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setInt(1, id);
-			
+
 			int rowAffected = preparedStatement.executeUpdate();
-			
-			if(rowAffected > 0) {
-				return true;
+			if (rowAffected > 0) {
+				return "Student Deleted Successfully";
 			}
-			return false;
 		} catch (SQLException e) {
+			if (e.getMessage().contains("a foreign key constraint fails")) {
+				return "Student is enrolled in a course. Cannot delete student.";
+			}
 			e.printStackTrace();
 		}
-		return false;
+		return "Delete Student Failed";
 	}
-	
+
 	public int totalNumberOfStudent() {
 		String query = "select count(*) as c from student";
 		int totalStudent = 0;

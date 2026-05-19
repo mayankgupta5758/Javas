@@ -18,21 +18,15 @@ Student student = (Student) request.getAttribute("student");
 <body>
 <%if (session.getAttribute("userName") == null) {
 	response.sendRedirect(request.getContextPath() + "/login.jsp");
-	return;
-} %>
+	return; } %>
 	<div class="circle-form">
 
 		<form action="<%=request.getContextPath()%>/updateStudent"
 			method="post">
-				<%
-				if (request.getAttribute("updatemsg") != null) {
-				%>
-				<h3 style="color: red;">
-				<%=request.getAttribute("updatemsg")%></h3>
-				<%
-				}
-				%>
-			<% session.removeAttribute("updatemsg"); %>
+				<% if (session.getAttribute("updatestdfailmsg") != null) { %>
+				<h3 style="color: red;"><%=session.getAttribute("updatestdfailmsg")%></h3>
+				<% } session.removeAttribute("updatestdfailmsg"); %>
+				
 			<a type="submit" id="button-333"
 				href="<%=request.getContextPath()%>/views/student-list.jsp">
 				Back </a>

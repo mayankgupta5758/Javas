@@ -15,32 +15,17 @@ import model.Registration;
 @WebServlet("/filterRegistration")
 public class FilterRegistrationServlet extends HttpServlet {
 
-	protected void doGet(HttpServletRequest req,
-			HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		String studentId = req.getParameter("studentId");
-
 		String courseId = req.getParameter("courseId");
-
 		String status = req.getParameter("status");
 
 		RegistrationDAO dao = new RegistrationDAO();
-
-		List<Registration> list =
-				dao.filterRegistration(
-						studentId,
-						courseId,
-						status
-				);
-
+		List<Registration> list = dao.filterRegistration(studentId, courseId, status);
 		req.setAttribute("list", list);
 
-		RequestDispatcher rd =
-			req.getRequestDispatcher(
-				"views/registration-list.jsp"
-			);
-
+		RequestDispatcher rd = req.getRequestDispatcher("views/registration-list.jsp");
 		rd.forward(req, resp);
 	}
 }

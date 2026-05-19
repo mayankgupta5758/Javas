@@ -9,22 +9,20 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
 @WebServlet("/deleteStudent")
-public class DeleteStudentServlet extends HttpServlet{
+public class DeleteStudentServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		int id = Integer.parseInt(req.getParameter("id"));
-		
 		StudentDAO studentDAO = new StudentDAO();
-		boolean status = studentDAO.deleteStudent(id);
-		
-		if(status) {
-			resp.sendRedirect(req.getContextPath() + "/views/student-list.jsp");
-			return;
-		} 
-		req.setAttribute("deletestdmsg", "Delete Student Failed");	
+
+		String message = studentDAO.deleteStudent(id);
+		if (message.equals("Student Deleted Successfully")) {
+			req.getSession().setAttribute("deletestdpassmsg", message);
+		} else {
+			req.getSession().setAttribute("deletestdfailmsg", message);
+		}
 		resp.sendRedirect(req.getContextPath() + "/views/student-list.jsp");
 	}
 }

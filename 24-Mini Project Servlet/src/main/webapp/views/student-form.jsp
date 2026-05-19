@@ -19,15 +19,15 @@
 		<form action="<%=request.getContextPath()%>/addStudent" method="post">
 			<h3 style="color: red;">
 				<%
-				if (request.getSession().getAttribute("addstdmsg") != null) {
+				if (session.getAttribute("addstdfailmsg") != null) {
 				%>
-				<%=request.getSession().getAttribute("addstdmsg")%>
+				<%=session.getAttribute("addstdfailmsg")%>
 				<%
 				}
 				%>
 			</h3>
 			<%
-			session.removeAttribute("addstdmsg");
+			session.removeAttribute("addstdfailmsg");
 			%>
 			<a type="submit" id="button-333"
 				href="<%=request.getContextPath()%>/views/student-list.jsp">

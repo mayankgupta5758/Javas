@@ -141,7 +141,6 @@ public class RegistrationDAO {
 			preparedStatement.setInt(1, id);
 
 			int rowAffected = preparedStatement.executeUpdate();
-
 			if (rowAffected > 0) {
 				return true;
 			}

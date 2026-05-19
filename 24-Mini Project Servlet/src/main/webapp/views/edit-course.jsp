@@ -16,26 +16,17 @@ Course course = (Course) request.getAttribute("course");
 	href="<%=application.getContextPath()%>/css/style.css">
 </head>
 <body>
-<%if (session.getAttribute("userName") == null) {
+		<%if (session.getAttribute("userName") == null) {
 			response.sendRedirect(request.getContextPath() + "/login.jsp");
-			return;
-		} %>
+			return; } %>
 	<div class="circle-form">
-		
-		
-			<%
-			if (request.getAttribute("updatcourseemsg") != null) {
-			%>
-			<h3 style="color: red;">
-			<%=request.getAttribute("updatcourseemsg")%>
-			</h3>
-			<%
-			}
-			%>
-		<% session.removeAttribute("updatcourseemsg"); %>
+		<%if (request.getAttribute("updatcourseefailmsg") != null) { %>
+			<h3 style="color: red;"> <%=request.getAttribute("updatcourseefailmsg")%></h3>
+			<%} session.removeAttribute("updatcourseefailmsg"); %>
+			
 		<form action="<%=request.getContextPath()%>/updateCourse"
 			method="post">
-<a type="submit" id="button-333"
+		<a type="submit" id="button-333"
 			href="<%=request.getContextPath()%>/views/course-list.jsp"> Back
 		</a>
 			<h2>Update Course Details Here...</h2>

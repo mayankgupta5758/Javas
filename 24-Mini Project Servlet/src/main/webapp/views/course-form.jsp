@@ -19,16 +19,16 @@
 			}
 			%>
 			<%
-			if (request.getSession().getAttribute("addcoursedmsg") != null) {
+			if (session.getAttribute("addcoursefaildmsg") != null) {
 			%>
 			<h3 style="color: red;">
-			<%=request.getSession().getAttribute("addcoursedmsg")%>
+			<%= session.getAttribute("addcoursefaildmsg")%>
 			</h3>
 			<%
 			}
 			%>
 		
-		<% session.removeAttribute("addcoursedmsg"); %>
+		<% session.removeAttribute("addcoursefaildmsg"); %>
 
 		<form action="<%=request.getContextPath()%>/addCourse" method="post">
 			<a type="submit" id="button-333"

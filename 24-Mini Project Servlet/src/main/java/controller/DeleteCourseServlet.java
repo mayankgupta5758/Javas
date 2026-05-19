@@ -18,7 +18,7 @@ public class DeleteCourseServlet extends HttpServlet {
 		CourseDAO dao = new CourseDAO();
 		String msg = dao.deleteCourse(id);
 
-		req.getSession().setAttribute("deletecoursemsg", msg);
+		req.getSession().setAttribute("deletecoursepassmsg", msg);
 		resp.sendRedirect(req.getContextPath() + "/views/course-list.jsp");
 	}
 }

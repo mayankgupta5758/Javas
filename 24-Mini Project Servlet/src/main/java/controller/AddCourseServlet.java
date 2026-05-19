@@ -24,25 +24,33 @@ public class AddCourseServlet extends HttpServlet{
 		String trainerName = req.getParameter("trainerName");
 		
 		if(fees <= 0) {
-			req.getSession().setAttribute("addcoursedmsg", "Add Course Failed. Fees Must be +ve");
+			req.getSession().setAttribute("addcoursefaildmsg", "Add Course Failed. Fees Must be +ve");
 			resp.sendRedirect(req.getContextPath() + "/views/course-form.jsp");
 			return;
 		}
 		if(!UtilityFunction.isValidDuration(duration)) {
-			req.getSession().setAttribute("addcoursedmsg", "Add Course Failed. Duration Must be +ve");
+			req.getSession().setAttribute("addcoursefaildmsg", "Add Course Failed. Duration Must be +ve");
 			resp.sendRedirect(req.getContextPath() + "/views/course-form.jsp");
 			return;
 		}
-		Course course = new Course(name, duration, fees, trainerName);
 		
+		String chkDup = courseDAO.checkDuplicateCourse(name, trainerName);
+		if(chkDup != null) {
+			req.getSession().setAttribute("addcoursefaildmsg", chkDup);
+			resp.sendRedirect(req.getContextPath() + "/views/course-form.jsp");
+			return;
+		}
+		
+		Course course = new Course(name, duration, fees, trainerName);
 		boolean status = courseDAO.addCourse(course);
 		
 		if(status) {
+			req.getSession().setAttribute("addcoursepassmsg", "Course Added Successfully.");
 			resp.sendRedirect(req.getContextPath() + "/views/course-list.jsp");
 			return;
 		} 
 		
-		req.getSession().setAttribute("addcoursedmsg", "Add Course Failed");
+		req.getSession().setAttribute("addcoursefaildmsg", "Add Course Failed");
 		resp.sendRedirect(req.getContextPath() + "/views/course-form.jsp");
 	}
 }

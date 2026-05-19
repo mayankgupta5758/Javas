@@ -12,31 +12,29 @@
 <link rel="stylesheet"
 	href="<%=application.getContextPath()%>/css/style.css">
 </head>
-
 <body>
-	<%
-	String userName = (String) request.getSession().getAttribute("userName");
-	if (userName == null) {
-		response.sendRedirect(request.getContextPath() + "/login.jsp");
-		return;
-	}
-	String firstLetter = userName.substring(0, 1);
-	CourseDAO courseDAO = new CourseDAO();
-	StudentDAO studentDAO = new StudentDAO();
-	RegistrationDAO regDAO = new RegistrationDAO();
-	int totalStd = studentDAO.totalNumberOfStudent();
-	int totalCourse = courseDAO.totalNumberOfCourse();
-	int totalReg = regDAO.totalNumberOfRegistration();
-	%>
+					<%
+					String userName = (String) request.getSession().getAttribute("userName");
+					if (userName == null) {
+						response.sendRedirect(request.getContextPath() + "/login.jsp");
+						return;
+					}
+					String firstLetter = userName.substring(0, 1);
+					CourseDAO courseDAO = new CourseDAO();
+					StudentDAO studentDAO = new StudentDAO();
+					RegistrationDAO regDAO = new RegistrationDAO();
+					int totalStd = studentDAO.totalNumberOfStudent();
+					int totalCourse = courseDAO.totalNumberOfCourse();
+					int totalReg = regDAO.totalNumberOfRegistration();
+	
+						if (session.getAttribute("adminpassmsg") != null) { %>
+						<h3 style="color: green;"><%=session.getAttribute("adminpassmsg")%></h3>
+						<% } session.removeAttribute("adminpassmsg"); %>
 
 	<div class="dashboard-river">
-
 		<div class="dashboard-container">
-
 			<div class="dashboard">
-
 				<div class="ui-row-1">
-
 					<div class="logo-comp">
 						<p>
 							Welcome
@@ -55,9 +53,6 @@
 						</div>
 					</div>
 				</div>
-
-
-
 				<div class="ui-row-2">
 					<div class="main-content">
 
@@ -126,15 +121,9 @@
 							</form>
 						</div>
 					</div>
-
 				</div>
-
 			</div>
-
 		</div>
-
 	</div>
-
 </body>
-
 </html>

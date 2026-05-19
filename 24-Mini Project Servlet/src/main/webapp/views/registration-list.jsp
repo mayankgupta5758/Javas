@@ -13,14 +13,16 @@
 </head>
 
 <body>
-<%if (session.getAttribute("userName") == null) {
-	response.sendRedirect(request.getContextPath() + "/login.jsp");
-	return;
-} %>
 	<%
-	List<Registration> list = (List<Registration>)request.getAttribute("list");
+	if (session.getAttribute("userName") == null) {
+		response.sendRedirect(request.getContextPath() + "/login.jsp");
+		return;
+	}
+	%>
+	<%
+	List<Registration> list = (List<Registration>) request.getAttribute("list");
 
-	if(list == null){
+	if (list == null) {
 		list = new RegistrationDAO().seeAllRegistration();
 	}
 	%>
@@ -38,16 +40,51 @@
 								href="<%=request.getContextPath()%>/views/registration-form.jsp">
 								Add new Registration </a>
 						</div>
-						
+
 
 						<%
-						if (request.getAttribute("deleteregmsg") != null) {
+						if (session.getAttribute("deleteregepassmsg") != null) {
 						%>
-						<h3 style="color: red;"><%=request.getAttribute("deleteregmsg")%></h3>
+						<h3 style="color: green;"><%=session.getAttribute("deleteregepassmsg")%></h3>
 						<%
 						}
 						%>
-<% session.removeAttribute("deleteregmsg"); %>
+						<%
+						session.removeAttribute("deleteregepassmsg");
+						%>
+
+						<%
+						if (session.getAttribute("deleteregfailmsg") != null) {
+						%>
+						<h3 style="color: red;"><%=session.getAttribute("deleteregfailmsg")%></h3>
+						<%
+						}
+						%>
+						<%
+						session.removeAttribute("deleteregfailmsg");
+						%>
+
+						<%
+						if (session.getAttribute("addregpassmsg") != null) {
+						%>
+						<h3 style="color: green;"><%=session.getAttribute("addregpassmsg")%></h3>
+						<%
+						}
+						%>
+						<%
+						session.removeAttribute("addregpassmsg");
+						%>
+
+						<%
+						if (session.getAttribute("updateregpassmsg") != null) {
+						%>
+						<h3 style="color: green;"><%=session.getAttribute("updateregpassmsg")%></h3>
+						<%
+						}
+						%>
+						<%
+						session.removeAttribute("updateregpassmsg");
+						%>
 						<div class="featured-clay">
 
 							<%

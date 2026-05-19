@@ -18,7 +18,7 @@ public class EditRegistrationServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		int id = Integer.parseInt(req.getParameter("id"));
-		
+	
 		RegistrationDAO dao = new RegistrationDAO();
 		Registration registration = dao.getRegistrationById(id);
 		req.setAttribute("registration", registration);

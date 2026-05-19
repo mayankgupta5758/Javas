@@ -13,13 +13,11 @@
 </head>
 
 <body>
-	<%
-	List<Course> list = new CourseDAO().seeAllCourse();
+	<% List<Course> list = new CourseDAO().seeAllCourse();
 	if (session.getAttribute("userName") == null) {
 		response.sendRedirect(request.getContextPath() + "/login.jsp");
 		return;
-	}
-	%>
+	} %>
 	<div class="dashboard-river">
 		<div class="dashboard-container">
 			<div class="dashboard">
@@ -36,26 +34,26 @@
 						</div>
 						<hr>
 
-						<%
-						if (request.getAttribute("deletecoursemsg") != null) {
-						%>
-						<h3 style="color: red;"><%=request.getAttribute("deletecoursemsg")%></h3>
-						<%
-						}
-						%>
-
-<% session.removeAttribute("deletecoursemsg"); %>
+						<% if (session.getAttribute("deletecoursepassmsg") != null) { %>
+						<h3 style="color: green;"><%=session.getAttribute("deletecoursepassmsg")%></h3>
+						<% } session.removeAttribute("deletecoursepassmsg"); %>
+						
+						<% if (session.getAttribute("addcoursepassmsg") != null) { %>
+						<h3 style="color: green;"><%=session.getAttribute("addcoursepassmsg")%></h3>
+						<% } session.removeAttribute("addcoursepassmsg"); %>
+						
+						<% if (session.getAttribute("updatecoursepassmsg") != null) { %>
+						<h3 style="color: green;"><%=session.getAttribute("updatecoursepassmsg")%></h3>
+						<% } session.removeAttribute("updatecoursepassmsg"); %>
 
 						<div class="featured-clay">
 
-							<%
-							if (list.size() > 0) {
+							<% if (list.size() > 0) {
 								for (int i = 0; i < list.size(); i++) {
 							%>
 							<div>
 								<div></div>
 								<div style="color: rgb(20, 188, 138);">
-
 									<h3>
 										Name:
 										<%=list.get(i).getcName()%></h3>
@@ -102,7 +100,6 @@
 							}
 							%>
 						</div>
-
 					</div>
 				</div>
 			</div>

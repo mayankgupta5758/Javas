@@ -13,10 +13,12 @@
 </head>
 
 <body>
-<%if (session.getAttribute("userName") == null) {
-	response.sendRedirect(request.getContextPath() + "/login.jsp");
-	return;
-} %>
+	<%
+	if (session.getAttribute("userName") == null) {
+		response.sendRedirect(request.getContextPath() + "/login.jsp");
+		return;
+	}
+	%>
 	<%
 	List<Student> list = new StudentDAO().seeAllStudent();
 	%>
@@ -25,9 +27,9 @@
 			<div class="dashboard">
 				<div class="ui-row-2">
 					<div class="main-content">
-					<a type="submit" id="button-333"
-								href="<%=request.getContextPath()%>/views/dashboard.jsp">
-								 Back </a>
+						<a type="submit" id="button-333"
+							href="<%=request.getContextPath()%>/views/dashboard.jsp">
+							Back </a>
 						<div class="large-banner">
 							<h2>Student's Details Here...</h2>
 							<a type="submit" title="Explore"
@@ -35,15 +37,50 @@
 								Add new Student </a>
 						</div>
 						<hr>
-
 						<%
-						if (request.getAttribute("deletestdmsg") != null) {
+						if (session.getAttribute("deletestdpassmsg") != null) {
 						%>
-						<h3 style="color: red;"><%=request.getAttribute("deletestdmsg")%></h3>
+						<h3 style="color: green;"><%=session.getAttribute("deletestdpassmsg")%></h3>
 						<%
 						}
 						%>
-<% session.removeAttribute("deletestdmsg"); %>
+						<%
+						session.removeAttribute("deletestdpassmsg");
+						%>
+
+						<%
+						if (session.getAttribute("addstdpassmsg") != null) {
+						%>
+						<h3 style="color: green;"><%=session.getAttribute("addstdpassmsg")%></h3>
+						<%
+						}
+						%>
+						<%
+						session.removeAttribute("addstdpassmsg");
+						%>
+
+						<%
+						if (session.getAttribute("updatestdpassmsg") != null) {
+						%>
+						<h3 style="color: green;"><%=session.getAttribute("updatestdpassmsg")%></h3>
+						<%
+						}
+						%>
+						<%
+						session.removeAttribute("updatestdpassmsg");
+						%>
+
+						<%
+						if (session.getAttribute("deletestdfailmsg") != null) {
+						%>
+						<h3 style="color: red;"><%=session.getAttribute("deletestdfailmsg")%></h3>
+						<%
+						}
+						%>
+						<%
+						session.removeAttribute("deletestdfailmsg");
+						%>
+
 						<div class="featured-clay">
 
 							<%
