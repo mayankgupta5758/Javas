@@ -5,13 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-//emp_id
-//emp_name
-//emp_city
-//city_code
-//emp_salary
-//emp_age
-//emp_email (regex)
 
 @Entity
 @Table(name = "employee")
@@ -36,6 +29,8 @@ public class Employee {
 
 	@Column(name = "e_email")
 	private String email;
+	
+	public Employee() {}
 
 	public Employee(int e_id, String name, String city, int city_code, double salary, int age, String email) {
 		this.e_id = e_id;
