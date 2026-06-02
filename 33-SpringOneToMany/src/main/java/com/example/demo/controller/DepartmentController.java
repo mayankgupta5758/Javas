@@ -2,8 +2,6 @@ package com.example.demo.controller;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,45 +20,50 @@ import com.example.demo.service.DepartmentService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/departments")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class DepartmentController {
 
 	private final DepartmentService departmentService;
 
 	@PostMapping
-	public ResponseEntity<DepartmentResponseDto> createDepartment(@Valid @RequestBody DepartmentRequestDto dto) {
-		return new ResponseEntity<>(departmentService.createDepartment(dto), HttpStatus.CREATED);
+	public DepartmentResponseDto createDepartment(@Valid @RequestBody DepartmentRequestDto dto) {
+		log.info("POST request received for creating department");
+		return  departmentService.createDepartment(dto);
 	}
 
 	@GetMapping
-	public ResponseEntity<List<DepartmentResponseDto>> getAllDepartments() {
-		return ResponseEntity.ok(departmentService.getAllDepartments());
+	public List<DepartmentResponseDto> getAllDepartments() {
+		log.info("GET request received for fetching all departments");
+		return departmentService.getAllDepartments();
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<DepartmentResponseDto> getDepartmentById(@PathVariable Long id) {
-		return ResponseEntity.ok(departmentService.getDepartmentById(id));
+	public DepartmentResponseDto getDepartmentById(@PathVariable Long id) {
+		return departmentService.getDepartmentById(id);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<DepartmentResponseDto> updateDepartment(@PathVariable Long id,
+	public DepartmentResponseDto updateDepartment(@PathVariable Long id,
 			@Valid @RequestBody DepartmentRequestDto dto) {
-		return ResponseEntity.ok(departmentService.updateDepartment(id, dto));
+		log.info("PUT request received for updating department id {}", id);
+		return departmentService.updateDepartment(id, dto);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteDepartment(@PathVariable Long id) {
+	public void deleteDepartment(@PathVariable Long id) {
+        log.info("DELETE request received for department id {}", id);
 		departmentService.deleteDepartment(id);
-		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/page")
-	public ResponseEntity<PageResponseDto<DepartmentResponseDto>> getAllDepartmentsWithPagination(
+	public PageResponseDto<DepartmentResponseDto> getAllDepartmentsWithPagination(
 			@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "5") int pageSize) {
-		return ResponseEntity.ok(departmentService.getAllDepartmentsWithPagination(pageNumber, pageSize));
+		return departmentService.getAllDepartmentsWithPagination(pageNumber, pageSize);
 	}
 }

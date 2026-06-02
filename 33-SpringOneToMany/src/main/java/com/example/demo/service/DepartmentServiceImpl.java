@@ -21,9 +21,11 @@ import com.example.demo.repository.DepartmentRepository;
 import com.example.demo.repository.EmployeeRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DepartmentServiceImpl implements DepartmentService {
 
 	private final DepartmentRepository departmentRepository;
@@ -32,6 +34,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
 	@Override
 	public DepartmentResponseDto createDepartment(DepartmentRequestDto dto) {
+		log.info("Creating department: {}", dto.getDepartmentName());
 		if (departmentRepository.existsByDepartmentName(dto.getDepartmentName())) {
 			throw new DuplicateResourceException("Department already exists with name : " + dto.getDepartmentName());
 		}
@@ -45,6 +48,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
 	@Override
 	public List<DepartmentResponseDto> getAllDepartments() {
+		log.info("Fetching all departments");
 		return departmentRepository.findAll().stream()
 				.map(department -> modelMapper.map(department, DepartmentResponseDto.class))
 				.collect(Collectors.toList());
@@ -72,12 +76,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 
 	@Override
 	public DepartmentResponseDto getDepartmentById(Long id) {
+		log.info("Fetching department with id {}", id);
 		Department department = findDepartmentById(id);
 		return modelMapper.map(department, DepartmentResponseDto.class);
 	}
 
 	@Override
 	public DepartmentResponseDto updateDepartment(Long id, DepartmentRequestDto dto) {
+		log.info("Updating department with id {}", id);
 		Department existingDepartment = findDepartmentById(id);
 
 		if (departmentRepository.existsByDepartmentNameAndIdNot(dto.getDepartmentName(), id)) {
@@ -101,56 +107,45 @@ public class DepartmentServiceImpl implements DepartmentService {
 
 	@Override
 	public void deleteDepartment(Long id) {
+		log.info("Deleting department with id {}", id);
 		Department department = findDepartmentById(id);
 		departmentRepository.delete(department);
 	}
 
 	private Department findDepartmentById(Long id) {
-
 		return departmentRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Department not found with id : " + id));
 	}
 
 	private void attachEmployeesToDepartment(Department department) {
-
 		department.getEmployees().forEach(employee -> employee.setDepartment(department));
 	}
 
 	private void validateEmployeeEmailsForCreate(DepartmentRequestDto dto) {
-
 		for (EmployeeRequestDto employee : dto.getEmployees()) {
-
 			if (employeeRepository.existsByEmail(employee.getEmail())) {
-
 				throw new DuplicateResourceException("Employee email already exists : " + employee.getEmail());
 			}
 		}
 	}
 
 	private void validateEmployeeEmailsForUpdate(DepartmentRequestDto dto) {
-
 		for (EmployeeRequestDto employee : dto.getEmployees()) {
-
 			if (employeeRepository.existsByEmail(employee.getEmail())) {
-
 				throw new DuplicateResourceException("Employee email already exists : " + employee.getEmail());
 			}
 		}
 	}
 
 	private void validatePagination(int pageNumber, int pageSize) {
-
 		if (pageNumber < 0) {
 			throw new IllegalArgumentException("Page number cannot be negative");
 		}
-
 		if (pageSize <= 0) {
 			throw new IllegalArgumentException("Page size must be greater than zero");
 		}
-
 		if (pageSize > 100) {
 			throw new IllegalArgumentException("Page size cannot exceed 100");
 		}
 	}
-
 }
